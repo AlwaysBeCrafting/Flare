@@ -8,21 +8,21 @@ import java.util.Set;
 class EntityFilter implements Iterable<Long> {
 	//--------------------------------------------------------------------------
 
-	private final Class<?>[] INCLUDE_ALL_TYPES;
-	private final Class<?>[] INCLUDE_ANY_TYPES;
-	private final Class<?>[] EXCLUDE_TYPES;
+	private final Class<?>[] REQUIRE_ALL_TYPES;
+	private final Class<?>[] REQUIRE_ONE_TYPES;
+	private final Class<?>[] FORBID_TYPES;
 
 	private final Set<Long> MATCHING_ENTITIES = new HashSet<>();
 
 	//--------------------------------------------------------------------------
 
 	EntityFilter(
-			Class<?>[] includeAllTypes,
-			Class<?>[] includeAnyTypes,
-			Class<?>[] excludeTypes ) {
-		INCLUDE_ALL_TYPES = includeAllTypes;
-		INCLUDE_ANY_TYPES = includeAnyTypes;
-		EXCLUDE_TYPES     = excludeTypes;
+			Class<?>[] requireAllTypes,
+			Class<?>[] requireOneTypes,
+			Class<?>[] forbidTypes ) {
+		REQUIRE_ALL_TYPES = requireAllTypes;
+		REQUIRE_ONE_TYPES = requireOneTypes;
+		FORBID_TYPES = forbidTypes;
 	}
 
 	//--------------------------------------------------------------------------
@@ -49,16 +49,16 @@ class EntityFilter implements Iterable<Long> {
 	//--------------------------------------------------------------------------
 
 	private boolean matches( Set<Class<?>> componentTypes ) {
-		for ( Class<?> type : INCLUDE_ALL_TYPES ) {
+		for ( Class<?> type : REQUIRE_ALL_TYPES ) {
 			if ( !componentTypes.contains( type )) return false;
 		}
 
-		for ( Class<?> type : EXCLUDE_TYPES ) {
+		for ( Class<?> type : FORBID_TYPES ) {
 			if ( componentTypes.contains( type )) return false;
 		}
 
-		if ( INCLUDE_ANY_TYPES == null || INCLUDE_ANY_TYPES.length == 0 ) return true;
-		for ( Class<?> type : INCLUDE_ANY_TYPES ) {
+		if ( REQUIRE_ONE_TYPES == null || REQUIRE_ONE_TYPES.length == 0 ) return true;
+		for ( Class<?> type : REQUIRE_ONE_TYPES ) {
 			if ( componentTypes.contains( type )) return true;
 		}
 

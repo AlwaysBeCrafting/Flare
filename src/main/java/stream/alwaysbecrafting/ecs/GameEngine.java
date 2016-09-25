@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 //==============================================================================
 /**
@@ -23,7 +23,7 @@ public class GameEngine {
 	//--------------------------------------------------------------------------
 
 	// Systems
-	private final SortedMap<GameSystem,Class<? extends GameSystem>> SYSTEMS = new TreeMap<>();
+	private final SortedMap<GameSystem,Class<? extends GameSystem>> SYSTEMS = new ConcurrentSkipListMap<>();
 
 	// Entities
 	private final SortedSet<Long> ENTITIES = new TreeSet<>();
@@ -64,10 +64,15 @@ public class GameEngine {
 	 * @param system The system to add
 	 */
 	public void add( GameSystem system ) {
+
 		if ( SYSTEMS.containsValue( system.getClass() )) {
 			throw new IllegalStateException(
 					system.getClass().getName() + " already exists in engine" );
 		} else {
+			if ( system.priority == Integer.MIN_VALUE ) {
+				if ( SYSTEMS.isEmpty() ) system.priority = 0;
+				else system.priority = SYSTEMS.lastKey().priority + 1;
+			}
 			SYSTEMS.put( system, system.getClass() );
 		}
 

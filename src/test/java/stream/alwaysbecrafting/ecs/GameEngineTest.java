@@ -121,13 +121,13 @@ public class GameEngineTest {
 				output.append( "5" );
 			}
 		};
-
-
 		engine.add( system1 );
 		engine.add( system2 );
 		engine.add( system3 );
 		engine.add( system4 );
 		engine.add( system5 );
+
+
 		engine.update( 0 );
 
 

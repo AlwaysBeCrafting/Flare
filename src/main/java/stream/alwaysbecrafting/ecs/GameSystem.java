@@ -7,12 +7,20 @@ package stream.alwaysbecrafting.ecs;
  * <p>If you need to iterate over a group of game entities each cycle, consider
  * subclassing {@link EntitySystem} instead.
  */
-public abstract class GameSystem {
+public abstract class GameSystem implements Comparable<GameSystem> {
 	//--------------------------------------------------------------------------
 
-	int priority = 0;
+	int priority = Integer.MIN_VALUE;
 	boolean isPaused = true;
 
+	//--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+
+	@Override public int compareTo( GameSystem other ) {
+		return Integer.compare( priority, other.priority );
+	}
+
+	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
 	/**

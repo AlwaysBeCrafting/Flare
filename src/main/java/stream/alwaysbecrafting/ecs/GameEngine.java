@@ -1,15 +1,14 @@
 package stream.alwaysbecrafting.ecs;
 
-import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.common.collect.Table;
 import com.sun.istack.internal.NotNull;
 
-import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 //==============================================================================
@@ -24,8 +23,7 @@ public class GameEngine {
 	//--------------------------------------------------------------------------
 
 	// Systems
-	private final Set<Class<? extends GameSystem>> SYSTEM_TYPES = new LinkedHashSet<>();
-	private final ClassToInstanceMap<GameSystem> SYSTEMS = MutableClassToInstanceMap.create();
+	private final SortedMap<GameSystem,Class<? extends GameSystem>> SYSTEMS = new TreeMap<>();
 
 	// Entities
 	private final SortedSet<Long> ENTITIES = new TreeSet<>();
@@ -66,12 +64,13 @@ public class GameEngine {
 	 * @param system The system to add
 	 */
 	public void add( GameSystem system ) {
-		if ( !SYSTEM_TYPES.add( system.getClass() )) {
+		if ( SYSTEMS.containsValue( system.getClass() )) {
 			throw new IllegalStateException(
 					system.getClass().getName() + " already exists in engine" );
+		} else {
+			SYSTEMS.put( system, system.getClass() );
 		}
 
-		SYSTEMS.put( system.getClass(), system );
 		system.onStart( this );
 		system.resume();
 	}
@@ -108,9 +107,9 @@ public class GameEngine {
 	 * @see EntitySystem#forbid(Class[])
 	 */
 	public void add( EntitySystem system ) {
-		for ( long entityId : COMPONENTS.rowKeySet() ) {
+		COMPONENTS.rowKeySet().forEach( entityId -> {
 			system.getFilter().offer( entityId, COMPONENTS.row( entityId ).keySet() );
-		}
+		} );
 		add( (GameSystem)system );
 	}
 
@@ -125,9 +124,9 @@ public class GameEngine {
 	 * @param deltaTime The time, in seconds, since the last update
 	 */
 	public void update( float deltaTime ) {
-		for ( Class<? extends GameSystem> type : SYSTEM_TYPES ) {
-			SYSTEMS.getInstance( type ).update( this, deltaTime );
-		}
+		SYSTEMS.keySet().forEach( system -> {
+			system.update( this, deltaTime );
+		} );
 	}
 
 	//--------------------------------------------------------------------------
@@ -137,9 +136,7 @@ public class GameEngine {
 	 * @param system The system to remove
 	 */
 	public void remove( GameSystem system ) {
-		if ( SYSTEMS.remove( system.getClass(), system )) {
-			SYSTEM_TYPES.remove( system.getClass() );
-
+		if ( SYSTEMS.remove( system, system.getClass() )) {
 			system.pause();
 			system.onStop( this );
 		}
@@ -148,9 +145,10 @@ public class GameEngine {
 	//--------------------------------------------------------------------------
 
 	public void remove( Class<? extends GameSystem> systemType ) {
-		if ( SYSTEMS.containsKey( systemType )) {
-			remove( SYSTEMS.get( systemType ));
-		}
+		SYSTEMS.entrySet().stream()
+				.filter( entry -> entry.getValue() == systemType )
+				.map( Map.Entry::getKey )
+				.forEach( this::remove );
 	}
 
 	//--------------------------------------------------------------------------
@@ -228,10 +226,9 @@ public class GameEngine {
 	 */
 	public void pause() {
 		if ( !isPaused ) {
-			for ( Class<? extends GameSystem> systemType : SYSTEM_TYPES ) {
-				GameSystem system = SYSTEMS.get( systemType );
+			SYSTEMS.keySet().forEach( system -> {
 				if ( !system.isPaused ) system.onPause();
-			}
+			} );
 		}
 		isPaused = true;
 	}
@@ -244,10 +241,9 @@ public class GameEngine {
 	 */
 	public void resume() {
 		if ( isPaused ) {
-			for ( Class<? extends GameSystem> systemType : SYSTEM_TYPES ) {
-				GameSystem system = SYSTEMS.get( systemType );
+			SYSTEMS.keySet().forEach( system -> {
 				if ( !system.isPaused ) system.onResume();
-			}
+			} );
 		}
 		isPaused = false;
 	}
@@ -256,13 +252,12 @@ public class GameEngine {
 	//--------------------------------------------------------------------------
 
 	private void offerToAll( long entityId ) {
-		for ( Class<? extends GameSystem> systemType : SYSTEM_TYPES ) {
-			try {
-				final EntitySystem system = (EntitySystem)SYSTEMS.get( systemType );
-				system.getFilter().offer( entityId, COMPONENTS.row( entityId ).keySet() );
-
-			} catch ( ClassCastException ex ) { continue; }
-		}
+		SYSTEMS.keySet().stream()
+				.filter( system -> system instanceof EntitySystem )
+				.map( system -> ( (EntitySystem)system ).getFilter()  )
+				.forEach( filter -> {
+					filter.offer( entityId, COMPONENTS.row( entityId ).keySet() );
+				} );
 	}
 
 	//--------------------------------------------------------------------------

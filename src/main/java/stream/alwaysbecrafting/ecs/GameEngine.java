@@ -27,13 +27,14 @@ public class GameEngine {
 	private final Set<Class<? extends GameSystem>> SYSTEM_TYPES = new LinkedHashSet<>();
 	private final ClassToInstanceMap<GameSystem> SYSTEMS = MutableClassToInstanceMap.create();
 
-
 	// Entities
 	private final SortedSet<Long> ENTITIES = new TreeSet<>();
 
-
 	// Components
 	private final Table<Long,Class<?>,Object> COMPONENTS = HashBasedTable.create();
+
+
+	private boolean isPaused = false;
 
 	//--------------------------------------------------------------------------
 
@@ -59,8 +60,8 @@ public class GameEngine {
 
 	/**
 	 * <p>Add a {@link GameSystem} to the engine, calling its
-	 * {@link GameSystem#onStart(GameEngine)} method and placing it at the end
-	 * of the system queue.
+	 * {@link GameSystem#onStart(GameEngine)} method and setting it to the
+	 * lowest priority.
 	 *
 	 * @param system The system to add
 	 */
@@ -72,6 +73,7 @@ public class GameEngine {
 
 		SYSTEMS.put( system.getClass(), system );
 		system.onStart( this );
+		system.resume();
 	}
 
 	//--------------------------------------------------------------------------
@@ -95,6 +97,7 @@ public class GameEngine {
 		}
 		add( (GameSystem)system );
 	}
+
 	//--------------------------------------------------------------------------
 
 	/**
@@ -120,6 +123,9 @@ public class GameEngine {
 	public void remove( GameSystem system ) {
 		if ( SYSTEMS.remove( system.getClass(), system )) {
 			SYSTEM_TYPES.remove( system.getClass() );
+
+			system.pause();
+			system.onStop( this );
 		}
 	}
 
@@ -192,6 +198,42 @@ public class GameEngine {
 	 */
 	public void remove( long entityId ) {
 		ENTITIES.remove( entityId );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * <p>Temporarily stop <i>all</i> processing on this engine, until a
+	 * subsequent call to {@link GameEngine#resume()} is made. Calling
+	 * {@link GameEngine#update(float)} while paused does nothing.
+	 *
+	 * <p>Also calls {@link GameSystem#onPause()} on all attached systems which
+	 * are not already paused
+	 */
+	public void pause() {
+		if ( !isPaused ) {
+			for ( Class<? extends GameSystem> systemType : SYSTEM_TYPES ) {
+				GameSystem system = SYSTEMS.get( systemType );
+				if ( !system.isPaused ) system.onPause();
+			}
+		}
+		isPaused = true;
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * <p>Resume handling update calls, and call {@link GameSystem#onResume()}
+	 * on all attached systems which were running before the engine was paused.
+	 */
+	public void resume() {
+		if ( isPaused ) {
+			for ( Class<? extends GameSystem> systemType : SYSTEM_TYPES ) {
+				GameSystem system = SYSTEMS.get( systemType );
+				if ( !system.isPaused ) system.onResume();
+			}
+		}
+		isPaused = false;
 	}
 
 	//--------------------------------------------------------------------------

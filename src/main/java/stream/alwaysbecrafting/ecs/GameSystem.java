@@ -10,22 +10,27 @@ package stream.alwaysbecrafting.ecs;
 public abstract class GameSystem {
 	//--------------------------------------------------------------------------
 
+	int priority = 0;
+	boolean isPaused = true;
+
+	//--------------------------------------------------------------------------
+
 	/**
-	 * <p>Set the priority order for this system to run this system in
-	 *
-	 * <p>In the future, {@link GameEngine} may implement concurrency that allows
-	 * systems at the same priority to run in parallel
-	 *
-	 * <p>May only be called before the system is added to a {@link GameEngine}
-	 *
-	 * <p>A good place to call this is from a subclass's constructor
-	 *
-	 * @param priority The priority to run at (lower is earlier)
-	 * @throws IllegalStateException If this system is already added to an engine
+	 * <p>Resume a paused system
 	 */
-	public final void setPriority( int priority )
-	throws IllegalStateException {
-		throw new UnsupportedOperationException( "setPriority() is not yet implemented" );
+	public void resume() {
+		if ( isPaused ) onResume();
+		isPaused = false;
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * <p>Pause a running system
+	 */
+	public void pause() {
+		if ( !isPaused ) onPause();
+		isPaused = true;
 	}
 
 	//--------------------------------------------------------------------------
@@ -46,7 +51,7 @@ public abstract class GameSystem {
 	 * {@code onResume()} will always be called immediately after
 	 * {@link GameSystem#onStart( GameEngine )} when initializing
 	 */
-	public void onResume( GameEngine engine ) {}
+	public void onResume() {}
 
 	//--------------------------------------------------------------------------
 
@@ -69,10 +74,9 @@ public abstract class GameSystem {
 	 * <p>Override to respond when this system is paused
 	 *
 	 * <p>{@code onPause()} will always be called immediately before
-	 *
 	 * {@link GameSystem#onStop( GameEngine )} when shutting down
 	 */
-	public void onPause( GameEngine engine ) {}
+	public void onPause() {}
 
 	//--------------------------------------------------------------------------
 

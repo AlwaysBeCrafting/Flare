@@ -195,12 +195,15 @@ public class GameEngineTest {
 				builder.append( "[3]" );
 			}
 		};
-
-
 		engine.add( system3, 3 );
 		engine.add( system2, 2 );
 		engine.add( system1, 1 );
 
+
+		engine.update( 0 );
+
+
+		Assert.assertEquals( "[1][2][3]", builder.toString() );
 	}
 
 	//--------------------------------------------------------------------------

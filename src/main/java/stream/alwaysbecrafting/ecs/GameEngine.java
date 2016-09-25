@@ -79,6 +79,22 @@ public class GameEngine {
 	//--------------------------------------------------------------------------
 
 	/**
+	 * <p>Add a {@link GameSystem} to the engine, calling its
+	 * {@link GameSystem#onStart(GameEngine)} method and setting it to the given
+	 * priority.
+	 *
+	 * @param system The system to add
+	 * @param priority The priority to set. Systems at the same priority are
+	 *                 eligible for concurrent execution.
+	 */
+	public void add( GameSystem system, int priority ) {
+		system.priority = priority;
+		add( system );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
 	 * <p>Add an {@link EntitySystem} to the engine, calling its
 	 * {@link GameSystem#onStart(GameEngine)} method and placing it at the end
 	 * of the system queue.

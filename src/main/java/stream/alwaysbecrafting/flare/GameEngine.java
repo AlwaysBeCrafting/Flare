@@ -1,4 +1,4 @@
-package stream.alwaysbecrafting.ecs;
+package stream.alwaysbecrafting.flare;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
@@ -178,7 +178,7 @@ public class GameEngine {
 			COMPONENTS.put( entityId, component.getClass(), component );
 		}
 
-		stream.alwaysbecrafting.ecs.Log.d( "" + ENTITIES.size() + " entities" );
+		stream.alwaysbecrafting.flare.Log.d( "" + ENTITIES.size() + " entities" );
 
 		offerToAll( entityId );
 

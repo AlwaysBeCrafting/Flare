@@ -1,4 +1,4 @@
-group 'stream.alwaysbecrafting.ecs'
+group 'stream.alwaysbecrafting.flare'
 version '0.1-alpha1'
 
 apply plugin: 'java'

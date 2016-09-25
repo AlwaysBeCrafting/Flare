@@ -1,4 +1,4 @@
-package stream.alwaysbecrafting.ecs;
+package stream.alwaysbecrafting.flare;
 
 
 //==============================================================================

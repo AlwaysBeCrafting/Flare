@@ -1,4 +1,4 @@
-package stream.alwaysbecrafting.ecs;
+package stream.alwaysbecrafting.flare;
 
 import org.junit.Assert;
 import org.junit.Test;

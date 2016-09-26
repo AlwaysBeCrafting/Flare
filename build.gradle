@@ -2,6 +2,8 @@ group 'stream.alwaysbecrafting.flare'
 version '0.1-alpha1'
 
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.8
 
@@ -10,7 +12,5 @@ repositories {
 }
 
 dependencies {
-    compile 'com.google.guava:guava:19.0'
-
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }

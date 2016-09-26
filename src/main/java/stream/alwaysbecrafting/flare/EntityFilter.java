@@ -5,14 +5,14 @@ import java.util.Iterator;
 import java.util.Set;
 
 //==============================================================================
-class EntityFilter implements Iterable<Long> {
+class EntityFilter implements Iterable<Entity> {
 	//--------------------------------------------------------------------------
 
 	private final Class<?>[] REQUIRE_ALL_TYPES;
 	private final Class<?>[] REQUIRE_ONE_TYPES;
 	private final Class<?>[] FORBID_TYPES;
 
-	private final Set<Long> MATCHING_ENTITIES = new HashSet<>();
+	private final Set<Entity> MATCHING_ENTITIES = new HashSet<>();
 
 	//--------------------------------------------------------------------------
 
@@ -27,20 +27,20 @@ class EntityFilter implements Iterable<Long> {
 
 	//--------------------------------------------------------------------------
 
-	@Override public Iterator<Long> iterator() {
+	@Override public Iterator<Entity> iterator() {
 		return new ComponentIterator();
 	}
 
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
-	boolean offer( long entityId, Set<Class<?>> componentTypes ) {
+	boolean offer( Entity entity, Set<Class<?>> componentTypes ) {
 		if ( matches( componentTypes )) {
-			MATCHING_ENTITIES.add( entityId );
+			MATCHING_ENTITIES.add( entity );
 			return true;
 
 		} else {
-			MATCHING_ENTITIES.remove( entityId );
+			MATCHING_ENTITIES.remove( entity );
 			return false;
 		}
 	}
@@ -69,10 +69,10 @@ class EntityFilter implements Iterable<Long> {
 	//--------------------------------------------------------------------------
 
 	//==========================================================================
-	private class ComponentIterator implements Iterator<Long> {
+	private class ComponentIterator implements Iterator<Entity> {
 		//----------------------------------------------------------------------
 
-		private Iterator<Long> INDEX = MATCHING_ENTITIES.iterator();
+		private Iterator<Entity> INDEX = MATCHING_ENTITIES.iterator();
 
 		//----------------------------------------------------------------------
 
@@ -82,7 +82,7 @@ class EntityFilter implements Iterable<Long> {
 
 		//----------------------------------------------------------------------
 
-		@Override public Long next() {
+		@Override public Entity next() {
 			return INDEX.next();
 		}
 

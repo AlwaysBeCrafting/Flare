@@ -1,14 +1,10 @@
 package stream.alwaysbecrafting.flare;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
 import com.sun.istack.internal.NotNull;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.SortedMap;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 //==============================================================================
@@ -25,11 +21,8 @@ public class GameEngine {
 	// Systems
 	private final SortedMap<GameSystem,Class<? extends GameSystem>> SYSTEMS = new ConcurrentSkipListMap<>();
 
-	// Entities
-	private final SortedSet<Long> ENTITIES = new TreeSet<>();
-
 	// Components
-	private final Table<Long,Class<?>,Object> COMPONENTS = HashBasedTable.create();
+	private final Map<Entity,Map<Class<?>,Object>> COMPONENTS = new HashMap<>();
 
 
 	private boolean isPaused = false;
@@ -41,13 +34,13 @@ public class GameEngine {
 	 * used within an {@link EntitySystem}, where filtering can guarantee that
 	 * certain components will be available for a given ID.
 	 *
-	 * @param entityId The ID of the entity to retrieve the component from
+	 * @param entity The entity to retrieve the component from
 	 * @param componentType The class of the component to retrieve
 	 * @return A component matching the ID and type provided, or {@code null} if none exists
 	 */
-	@NotNull public final <T> T getComponent( long entityId, Class<T> componentType ) {
+	@NotNull final <T> T getComponent( Entity entity, Class<T> componentType ) {
 		try {
-			return (T)COMPONENTS.get( entityId, componentType );
+			return (T)COMPONENTS.get( entity ).get( componentType );
 
 		} catch ( ClassCastException e ) { // Something went really wrong here
 			return null;
@@ -112,9 +105,10 @@ public class GameEngine {
 	 * @see EntitySystem#forbid(Class[])
 	 */
 	public void add( EntitySystem system ) {
-		COMPONENTS.rowKeySet().forEach( entityId -> {
-			system.getFilter().offer( entityId, COMPONENTS.row( entityId ).keySet() );
+		COMPONENTS.forEach(( entity, components ) -> {
+			system.getFilter().offer( entity, components.keySet() );
 		} );
+
 		add( (GameSystem)system );
 	}
 
@@ -164,25 +158,18 @@ public class GameEngine {
 	 * @param components The components to give to the new entity
 	 * @return The ID of the newly created component
 	 */
-	public long createEntity( Object... components ) {
-		long entityId = 0;
+	public Entity createEntity( Object... components ) {
+		Entity entity = new Entity( this );
 
-		try {
-			entityId = ENTITIES.last() + 1;
-
-		} catch ( NoSuchElementException ex ) { /* This is fine, entityId = 0 */ }
-
-		ENTITIES.add( entityId );
+		COMPONENTS.put( entity, new HashMap<>() );
 
 		for ( Object component : components ) {
-			COMPONENTS.put( entityId, component.getClass(), component );
+			COMPONENTS.get( entity ).put( component.getClass(), component );
 		}
 
-		stream.alwaysbecrafting.flare.Log.d( "" + ENTITIES.size() + " entities" );
+		offerToAll( entity );
 
-		offerToAll( entityId );
-
-		return entityId;
+		return entity;
 	}
 
 	//--------------------------------------------------------------------------
@@ -190,22 +177,22 @@ public class GameEngine {
 	/**
 	 * <p>Add a component to an existing entity
 	 *
-	 * @param entityId The ID of the entity to add the component to
+	 * @param entity The ID of the entity to add the component to
 	 * @param component The component to add
 	 * @throws IllegalArgumentException When the ID provided does not belong to an existing entity
 	 */
-	public void add( long entityId, Object component ) throws IllegalArgumentException {
-		if ( !ENTITIES.contains( entityId )) {
+	public void add( Entity entity, Object component ) throws IllegalArgumentException {
+		if ( !COMPONENTS.keySet().contains( entity )) {
 			throw new IllegalArgumentException(
 					"Tried to add component " +
 							component +
 							" to non-existent entity " +
-							entityId );
+							entity );
 		}
 
-		COMPONENTS.put( entityId, component.getClass(), component );
+		COMPONENTS.get( entity ).put( component.getClass(), component );
 
-		offerToAll( entityId );
+		offerToAll( entity );
 	}
 
 	//--------------------------------------------------------------------------
@@ -213,10 +200,10 @@ public class GameEngine {
 	/**
 	 * <p>Remove an entity and all its components
 	 *
-	 * @param entityId The ID of the entity to remove
+	 * @param entity The ID of the entity to remove
 	 */
-	public void remove( long entityId ) {
-		ENTITIES.remove( entityId );
+	public void remove( Entity entity ) {
+		COMPONENTS.remove( entity );
 	}
 
 	//--------------------------------------------------------------------------
@@ -256,12 +243,12 @@ public class GameEngine {
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
-	private void offerToAll( long entityId ) {
+	private void offerToAll( Entity entity ) {
 		SYSTEMS.keySet().stream()
 				.filter( system -> system instanceof EntitySystem )
 				.map( system -> ( (EntitySystem)system ).getFilter()  )
 				.forEach( filter -> {
-					filter.offer( entityId, COMPONENTS.row( entityId ).keySet() );
+					filter.offer( entity, COMPONENTS.get( entity ).keySet() );
 				} );
 	}
 

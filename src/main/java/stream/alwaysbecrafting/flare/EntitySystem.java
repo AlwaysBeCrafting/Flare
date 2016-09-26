@@ -79,15 +79,15 @@ public abstract class EntitySystem extends GameSystem {
 	@Override public void onUpdate( GameEngine engine, float deltaTime ) {
 		onUpdateCalled = true;
 
-		for ( long entityId : getFilter() ) {
-			onHandleEntity( engine, entityId, deltaTime );
+		for ( Entity entity : getFilter() ) {
+			onHandleEntity( entity, deltaTime );
 		}
 	}
 
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
-	protected abstract void onHandleEntity( GameEngine engine, long entityId, float deltaTime );
+	protected abstract void onHandleEntity( Entity entity, float deltaTime );
 
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 package stream.alwaysbecrafting.flare;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -8,11 +9,23 @@ import java.util.Set;
 class EntityFilter implements Iterable<Entity> {
 	//--------------------------------------------------------------------------
 
-	private final Class<?>[] REQUIRE_ALL_TYPES;
-	private final Class<?>[] REQUIRE_ONE_TYPES;
-	private final Class<?>[] FORBID_TYPES;
+	static final EntityFilter MATCH_NONE = new EntityFilter() {
+		@Override public Iterator<Entity> iterator() { return Collections.emptyIterator(); }
+		@Override boolean offer( Entity entity ) { return false; }
+	};
+
+	//--------------------------------------------------------------------------
+
+	private final Set<Class<?>> REQUIRE_ALL_TYPES = new HashSet<>();
+	private final Set<Class<?>> REQUIRE_ONE_TYPES = new HashSet<>();
+	private final Set<Class<?>> FORBID_TYPES      = new HashSet<>();
 
 	private final Set<Entity> MATCHING_ENTITIES = new HashSet<>();
+
+	//--------------------------------------------------------------------------
+	//--------------------------------------------------------------------------
+
+	private EntityFilter() {}
 
 	//--------------------------------------------------------------------------
 
@@ -20,11 +33,12 @@ class EntityFilter implements Iterable<Entity> {
 			Class<?>[] requireAllTypes,
 			Class<?>[] requireOneTypes,
 			Class<?>[] forbidTypes ) {
-		REQUIRE_ALL_TYPES = requireAllTypes;
-		REQUIRE_ONE_TYPES = requireOneTypes;
-		FORBID_TYPES = forbidTypes;
+		Collections.addAll( REQUIRE_ALL_TYPES, requireAllTypes );
+		Collections.addAll( REQUIRE_ONE_TYPES, requireOneTypes );
+		Collections.addAll( FORBID_TYPES,      forbidTypes     );
 	}
 
+	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
 	@Override public Iterator<Entity> iterator() {
@@ -34,8 +48,8 @@ class EntityFilter implements Iterable<Entity> {
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
-	boolean offer( Entity entity, Set<Class<?>> componentTypes ) {
-		if ( matches( componentTypes )) {
+	boolean offer( Entity entity ) {
+		if ( matches( entity )) {
 			MATCHING_ENTITIES.add( entity );
 			return true;
 
@@ -48,21 +62,29 @@ class EntityFilter implements Iterable<Entity> {
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
-	private boolean matches( Set<Class<?>> componentTypes ) {
-		for ( Class<?> type : REQUIRE_ALL_TYPES ) {
-			if ( !componentTypes.contains( type )) return false;
-		}
+	private boolean matches( Entity entity ) {
+		return hasAllComponents( entity, REQUIRE_ALL_TYPES )
+		&&     hasAnyComponent(  entity, REQUIRE_ONE_TYPES )
+		&&     hasNoComponent(   entity, FORBID_TYPES      );
+	}
 
-		for ( Class<?> type : FORBID_TYPES ) {
-			if ( componentTypes.contains( type )) return false;
-		}
+	//--------------------------------------------------------------------------
 
-		if ( REQUIRE_ONE_TYPES == null || REQUIRE_ONE_TYPES.length == 0 ) return true;
-		for ( Class<?> type : REQUIRE_ONE_TYPES ) {
-			if ( componentTypes.contains( type )) return true;
-		}
+	private boolean hasAllComponents( Entity entity, Set<Class<?>> types ) {
+		return entity.getComponentTypes().containsAll( types );
+	}
 
-		return false;
+	//--------------------------------------------------------------------------
+
+	private boolean hasAnyComponent( Entity entity, Set<Class<?>> types ) {
+		return types.isEmpty()
+		|| entity.getComponentTypes().stream().anyMatch( types::contains );
+	}
+
+	//--------------------------------------------------------------------------
+
+	private boolean hasNoComponent( Entity entity, Set<Class<?>> types ) {
+		return entity.getComponentTypes().stream().noneMatch( types::contains );
 	}
 
 	//--------------------------------------------------------------------------

@@ -101,7 +101,7 @@ public abstract class EntitySystem extends GameSystem {
 
 	//--------------------------------------------------------------------------
 
-	EntityFilter getFilter() {
+	@Override EntityFilter getFilter() {
 		if ( componentFilter == null ){
 			componentFilter = new EntityFilter(
 					requireAllTypes,

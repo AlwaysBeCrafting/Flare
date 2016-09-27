@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 //==============================================================================
 /**
- * <p>The class providing the main loop of the game.
+ * <p>The provider for the game's main loop logic
  *
  * <p>{@code GameEngine} should usually not be extended; instead, users of this
  * class should create a {@code new GameEngine()} and add subclasses of
@@ -36,6 +36,7 @@ public class GameEngine {
 	 * @param system The system to add
 	 */
 	public void add( GameSystem system ) {
+		ENTITIES.forEach( system.getFilter()::offer );
 
 		if ( SYSTEMS.containsValue( system.getClass() )) {
 			throw new IllegalStateException(
@@ -60,32 +61,12 @@ public class GameEngine {
 	 * priority.
 	 *
 	 * @param system The system to add
-	 * @param priority The priority to set. Systems at the same priority are
-	 *                 eligible for concurrent execution.
+	 * @param priority The priority to set. In future releases, systems at the
+	 *                 same priority will be eligible for concurrent execution.
 	 */
 	public void add( GameSystem system, int priority ) {
 		system.priority = priority;
 		add( system );
-	}
-
-	//--------------------------------------------------------------------------
-
-	/**
-	 * <p>Add an {@link EntitySystem} to the engine, calling its
-	 * {@link GameSystem#onStart(GameEngine)} method and placing it at the end
-	 * of the system queue.
-	 *
-	 * <p>If some entities already exist in this engine, they
-	 * are assigned to the new system as defined in its filter parameters.
-	 *
-	 * @param system The system to add
-	 * @see EntitySystem#requireAll(Class[])
-	 * @see EntitySystem#requireOne(Class[])
-	 * @see EntitySystem#forbid(Class[])
-	 */
-	public void add( EntitySystem system ) {
-		ENTITIES.forEach( system.getFilter()::offer );
-		add( (GameSystem)system );
 	}
 
 	//--------------------------------------------------------------------------
@@ -119,6 +100,10 @@ public class GameEngine {
 
 	//--------------------------------------------------------------------------
 
+	/**
+	 * <p>Remove a {@link GameSystem} from the engine
+	 * @param systemType The type of the system to remove
+	 */
 	public void remove( Class<? extends GameSystem> systemType ) {
 		SYSTEMS.entrySet().stream()
 				.filter( entry -> entry.getValue() == systemType )
@@ -128,6 +113,10 @@ public class GameEngine {
 
 	//--------------------------------------------------------------------------
 
+	/**
+	 * <p>Add one or more {@link Entity Entities} to the engine
+	 * @param entities Entities to add
+	 */
 	public void add( Entity... entities ) {
 		List<Entity> entityList = Arrays.asList( entities );
 		ENTITIES.addAll( entityList );
@@ -139,6 +128,10 @@ public class GameEngine {
 
 	//--------------------------------------------------------------------------
 
+	/**
+	 * <p>Remove one or more {@link Entity Entities} from the engine
+	 * @param entity Entity to remove
+	 */
 	public void remove( Entity entity ) {
 		ENTITIES.remove( entity );
 	}

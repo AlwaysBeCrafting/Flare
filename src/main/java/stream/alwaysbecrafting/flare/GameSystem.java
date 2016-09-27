@@ -57,22 +57,21 @@ public abstract class GameSystem implements Comparable<GameSystem> {
 	 *
 	 * <p>Systems are considered paused upon initialization, and
 	 * {@code onResume()} will always be called immediately after
-	 * {@link GameSystem#onStart( GameEngine )} when initializing
+	 * {@link GameSystem#onStart(GameEngine)} when initializing
 	 */
 	public void onResume() {}
 
 	//--------------------------------------------------------------------------
 
 	/**
-	 * <p>Override to implement this system's main game loop behavior. This is
-	 * where the system will do most of its work, and is called once for each
-	 * time {@link GameEngine#update(float)} is called on the attached
+	 * <p>Called when this system should execute its main game loop behavior.
+	 * This is where the system will do most of its work, and is called once for
+	 * each time {@link GameEngine#update(float)} is called on the attached
 	 * {@link GameEngine}.
 	 *
-	 * @param deltaTime The amount of time between the {@code Engine}'s last
-	 *                  call to {@code update()} and the current one. Note that
-	 *                  this is not the same as the time between this method's
-	 *                  own calls.
+	 * @param deltaTime The time given to {@link GameEngine#update(float)} for
+	 *                  this iteration of the game loop; ostensibly, the time
+	 *                  between the previous loop and the current one
 	 */
 	public void onUpdate( GameEngine engine, float deltaTime ) {}
 
@@ -82,7 +81,7 @@ public abstract class GameSystem implements Comparable<GameSystem> {
 	 * <p>Override to respond when this system is paused
 	 *
 	 * <p>{@code onPause()} will always be called immediately before
-	 * {@link GameSystem#onStop( GameEngine )} when shutting down
+	 * {@link GameSystem#onStop(GameEngine)} when shutting down
 	 */
 	public void onPause() {}
 

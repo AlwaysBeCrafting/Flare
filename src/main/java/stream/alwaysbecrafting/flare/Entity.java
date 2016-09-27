@@ -6,6 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 //==============================================================================
+/**
+ * <p>A group of components that exist and are processed together
+ *
+ * <p>{@code Entity} should usually not be extended; instead, users of this
+ * class should create new {@code Entities}, give them components in
+ * {@link Entity#add(Object)}, and then add the {@code Entity} to the engine
+ * with {@link GameEngine#add(Entity...)}.
+ */
 public class Entity {
 	//--------------------------------------------------------------------------
 
@@ -41,18 +49,34 @@ public class Entity {
 
 	//--------------------------------------------------------------------------
 
+	/**
+	 * Add a component to this {@code Entity} if a component of the same type
+	 * does not already exist
+	 * @param component The component to add
+	 * @return {@code true} if the component was added, else {@code false}
+	 */
 	public boolean add( Object component ) {
 		return COMPONENTS.putIfAbsent( component.getClass(), component ) == null;
 	}
 
 	//--------------------------------------------------------------------------
 
+	/**
+	 * Retrieves a component from this {@code Entity}
+	 * @param componentType The class of the component to retrieve
+	 * @return If it exists, the component of the given class, else {@code null}
+	 */
 	public <T> T get( Class<T> componentType ) {
 		return (T)COMPONENTS.get( componentType );
 	}
 
 	//--------------------------------------------------------------------------
 
+	/**
+	 * Removes a component from this {@code Entity}
+	 * @param componentType The class of the component to retrieve
+	 * @return {@code true} if a component was removed, else {@code false}
+	 */
 	public boolean remove( Class<?> componentType ) {
 		return COMPONENTS.remove( componentType ) != null;
 	}

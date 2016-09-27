@@ -76,6 +76,7 @@ public class GameEngine {
 	 * @param deltaTime The time, in seconds, since the last update
 	 */
 	public void update( float deltaTime ) {
+		if ( isPaused ) return;
 		SYSTEMS.keySet().forEach( system -> {
 			system.update( this, deltaTime );
 		} );

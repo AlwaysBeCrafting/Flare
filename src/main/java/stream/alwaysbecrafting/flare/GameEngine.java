@@ -69,7 +69,7 @@ public class GameEngine {
 	//--------------------------------------------------------------------------
 
 	/**
-	 * <p>Tell all {@link GameSystem}s in this engine to execute.<br/><br/>
+	 * <p>Tell all {@link GameSystem}s in this engine to execute.
 	 *
 	 * <p>Call this from your main game loop to perform all entity updates and
 	 * rendering.

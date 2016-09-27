@@ -69,6 +69,8 @@ public abstract class GameSystem implements Comparable<GameSystem> {
 	 * each time {@link GameEngine#update(float)} is called on the attached
 	 * {@link GameEngine}.
 	 *
+	 * @param engine The engine this update is occurring in
+	 *
 	 * @param deltaTime The time given to {@link GameEngine#update(float)} for
 	 *                  this iteration of the game loop; ostensibly, the time
 	 *                  between the previous loop and the current one

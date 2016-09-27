@@ -1,8 +1,7 @@
 package stream.alwaysbecrafting.flare;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -19,10 +18,10 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class GameEngine {
 	//--------------------------------------------------------------------------
 
+	final Set<Entity> ENTITIES = new HashSet<>();
+
+
 	private final SortedMap<GameSystem,Class<? extends GameSystem>> SYSTEMS = new ConcurrentSkipListMap<>();
-
-	private final Set<Entity> ENTITIES = new HashSet<>();
-
 
 	private boolean isPaused = false;
 
@@ -36,8 +35,6 @@ public class GameEngine {
 	 * @param system The system to add
 	 */
 	public void add( GameSystem system ) {
-		ENTITIES.forEach( system.getFilter()::offer );
-
 		if ( SYSTEMS.containsValue( system.getClass() )) {
 			throw new IllegalStateException(
 					system.getClass().getName() + " already exists in engine" );
@@ -118,12 +115,7 @@ public class GameEngine {
 	 * @param entities Entities to add
 	 */
 	public void add( Entity... entities ) {
-		List<Entity> entityList = Arrays.asList( entities );
-		ENTITIES.addAll( entityList );
-
-		SYSTEMS.forEach(( system, systemType ) -> {
-			entityList.forEach( system.getFilter()::offer );
-		} );
+		Collections.addAll( ENTITIES, entities );
 	}
 
 	//--------------------------------------------------------------------------

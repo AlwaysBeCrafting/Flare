@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 //==============================================================================
 /**
@@ -79,6 +80,37 @@ public class Entity {
 	 */
 	public boolean remove( Class<?> componentType ) {
 		return COMPONENTS.remove( componentType ) != null;
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @param types A list of classes to match against this entity's components
+	 * @return {@code true} if there is a component of every listed type, else {@code false}
+	 */
+	public boolean hasAllComponents( Set<Class<?>> types ) {
+		return COMPONENTS.keySet().containsAll( types );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @param types A list of classes to match against this entity's components
+	 * @return {@code true} if there is a component of at least one listed type, else {@code false}
+	 */
+	public boolean hasAnyComponent( Set<Class<?>> types ) {
+		return types.isEmpty()
+				|| COMPONENTS.keySet().stream().anyMatch( types::contains );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @param types A list of classes to match against this entity's components
+	 * @return {@code true} if there are no components of the listed types, else {@code false}
+	 */
+	public boolean hasNoComponent( Set<Class<?>> types ) {
+		return COMPONENTS.keySet().stream().noneMatch( types::contains );
 	}
 
 	//--------------------------------------------------------------------------

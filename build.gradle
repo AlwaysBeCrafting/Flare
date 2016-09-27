@@ -1,11 +1,8 @@
-group 'stream.alwaysbecrafting.flare'
-version '0.1-alpha1'
-
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-sourceCompatibility = 1.8
+
 
 repositories {
 	mavenCentral()
@@ -17,30 +14,34 @@ dependencies {
 
 
 
+// Generate and bundle extra JARs
 task javadocJar(type: Jar, dependsOn: javadoc) {
 	classifier = 'javadoc'
-	from 'build/docs/javadoc'
+	from javadoc
 }
 
 task sourcesJar(type: Jar) {
-	from sourceSets.main.allSource
 	classifier = 'sources'
+	from sourceSets.main.allSource
 }
-
 
 artifacts {
-	archives jar
-
-	archives javadocJar
-	archives sourcesJar
+	archives javadocJar, sourcesJar
 }
 
 
+
+// Sign all archives
 signing {
 	sign configurations.archives
 }
 
 
+
+// Metadata
+group 'stream.alwaysbecrafting'
+archiveBaseName 'flare'
+version '1.0.0'
 
 uploadArchives {
 	repositories {
@@ -48,26 +49,30 @@ uploadArchives {
 			beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
 			repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-				authentication(userName: sonatypeUsername, password: sonatypePassword)
+				authentication(userName: ossrhUsername, password: ossrhPassword)
+			}
+
+			snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+				authentication(userName: ossrhUsername, password: ossrhPassword)
 			}
 
 			pom.project {
 				name 'Flare'
 				packaging 'jar'
-				description 'A tiny entity system for simple games'
+				artifactId 'flare'
+				description 'A tiny ECS for simple games'
 				url 'https://github.com/AlwaysBeCrafting/Flare'
 
 				scm {
-					url 'scm:git@github.com:AlwaysBeCrafting/Flare.git'
 					connection 'scm:git@github.com:AlwaysBeCrafting/Flare.git'
 					developerConnection 'scm:git@github.com:AlwaysBeCrafting/Flare.git'
+					url 'git@github.com:AlwaysBeCrafting/Flare.git'
 				}
 
 				licenses {
 					license {
-						name 'The Apache Software License, Version 2.0'
+						name 'The Apache License, Version 2.0'
 						url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-						distribution 'repo'
 					}
 				}
 
@@ -75,6 +80,7 @@ uploadArchives {
 					developer {
 						id 'alexander-prime'
 						name 'Alexander Peters'
+						email 'rainesabaal@gmail.com'
 					}
 				}
 			}

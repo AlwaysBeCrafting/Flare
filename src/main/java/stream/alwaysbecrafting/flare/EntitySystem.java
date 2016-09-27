@@ -12,11 +12,12 @@ import java.util.Set;
  *
  * <p>At some point before being added to a {@link GameEngine} (usually in the
  * constructor), a subclass of this class should call one or more of
- * {@link this#requireAll(Class[])}, {@link this#requireOne(Class[])}, or
- * {@link this#forbid(Class[])} to describe which {@link Entity Entities} should be
- * given to its {@link this#onHandleEntity(Entity, float)} method.
+ * {@link EntitySystem#requireAll(Class[])},
+ * {@link EntitySystem#requireOne(Class[])}, or
+ * {@link EntitySystem#forbid(Class[])} to describe which {@link Entity Entities} should be
+ * given to its {@link EntitySystem#onHandleEntity(Entity, float)} method.
  *
- * <p>After the system is added, {@link this#onHandleEntity(Entity, float)} will
+ * <p>After the system is added, {@link EntitySystem#onHandleEntity(Entity, float)} will
  * be called each game loop for every {@link Entity} that matches the given
  * constraints.
  */

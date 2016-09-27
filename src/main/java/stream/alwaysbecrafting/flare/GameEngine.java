@@ -1,8 +1,6 @@
 package stream.alwaysbecrafting.flare;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -10,7 +8,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 //==============================================================================
 /**
- * <p>The class providing the main loop of the game.
+ * <p>The provider for the game's main loop logic
  *
  * <p>{@code GameEngine} should usually not be extended; instead, users of this
  * class should create a {@code new GameEngine()} and add subclasses of
@@ -19,10 +17,10 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class GameEngine {
 	//--------------------------------------------------------------------------
 
+	final Set<Entity> ENTITIES = new HashSet<>();
+
+
 	private final SortedMap<GameSystem,Class<? extends GameSystem>> SYSTEMS = new ConcurrentSkipListMap<>();
-
-	private final Set<Entity> ENTITIES = new HashSet<>();
-
 
 	private boolean isPaused = false;
 
@@ -36,7 +34,6 @@ public class GameEngine {
 	 * @param system The system to add
 	 */
 	public void add( GameSystem system ) {
-
 		if ( SYSTEMS.containsValue( system.getClass() )) {
 			throw new IllegalStateException(
 					system.getClass().getName() + " already exists in engine" );
@@ -60,8 +57,8 @@ public class GameEngine {
 	 * priority.
 	 *
 	 * @param system The system to add
-	 * @param priority The priority to set. Systems at the same priority are
-	 *                 eligible for concurrent execution.
+	 * @param priority The priority to set. In future releases, systems at the
+	 *                 same priority will be eligible for concurrent execution.
 	 */
 	public void add( GameSystem system, int priority ) {
 		system.priority = priority;
@@ -71,27 +68,7 @@ public class GameEngine {
 	//--------------------------------------------------------------------------
 
 	/**
-	 * <p>Add an {@link EntitySystem} to the engine, calling its
-	 * {@link GameSystem#onStart(GameEngine)} method and placing it at the end
-	 * of the system queue.
-	 *
-	 * <p>If some entities already exist in this engine, they
-	 * are assigned to the new system as defined in its filter parameters.
-	 *
-	 * @param system The system to add
-	 * @see EntitySystem#requireAll(Class[])
-	 * @see EntitySystem#requireOne(Class[])
-	 * @see EntitySystem#forbid(Class[])
-	 */
-	public void add( EntitySystem system ) {
-		ENTITIES.forEach( system.getFilter()::offer );
-		add( (GameSystem)system );
-	}
-
-	//--------------------------------------------------------------------------
-
-	/**
-	 * <p>Tell all {@link GameSystem}s in this engine to execute.<br/><br/>
+	 * <p>Tell all {@link GameSystem}s in this engine to execute.
 	 *
 	 * <p>Call this from your main game loop to perform all entity updates and
 	 * rendering.
@@ -99,6 +76,7 @@ public class GameEngine {
 	 * @param deltaTime The time, in seconds, since the last update
 	 */
 	public void update( float deltaTime ) {
+		if ( isPaused ) return;
 		SYSTEMS.keySet().forEach( system -> {
 			system.update( this, deltaTime );
 		} );
@@ -119,6 +97,10 @@ public class GameEngine {
 
 	//--------------------------------------------------------------------------
 
+	/**
+	 * <p>Remove a {@link GameSystem} from the engine
+	 * @param systemType The type of the system to remove
+	 */
 	public void remove( Class<? extends GameSystem> systemType ) {
 		SYSTEMS.entrySet().stream()
 				.filter( entry -> entry.getValue() == systemType )
@@ -128,17 +110,20 @@ public class GameEngine {
 
 	//--------------------------------------------------------------------------
 
-	public void add( Entity... entities ) {
-		List<Entity> entityList = Arrays.asList( entities );
-		ENTITIES.addAll( entityList );
-
-		SYSTEMS.forEach(( system, systemType ) -> {
-			entityList.forEach( system.getFilter()::offer );
-		} );
+	/**
+	 * <p>Add an entity to the engine
+	 * @param entity Entity to add
+	 */
+	public void add( Entity entity ) {
+		ENTITIES.add( entity );
 	}
 
 	//--------------------------------------------------------------------------
 
+	/**
+	 * <p>Remove an entity from the engine
+	 * @param entity Entity to remove
+	 */
 	public void remove( Entity entity ) {
 		ENTITIES.remove( entity );
 	}

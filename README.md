@@ -3,6 +3,10 @@ A tiny engine framework for simple games
 
 [Watch it being used on Twitch](http://alwaysbecrafting.stream)
 
+## Download
+### Gradle
+	compile 'stream.alwaysbecrafting:flare:1.0.0-alpha1'
+
 ## Usage
 
 Extend `GameSystem` or `EntitySystem`:

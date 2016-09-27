@@ -40,7 +40,7 @@ signing {
 
 // Metadata
 group 'stream.alwaysbecrafting'
-archiveBaseName 'flare'
+archivesBaseName = 'flare'
 version '1.0.0'
 
 uploadArchives {

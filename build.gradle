@@ -40,7 +40,7 @@ signing {
 
 // Metadata
 group 'stream.alwaysbecrafting'
-version '1.0.0'
+version '1.0.0-alpha1'
 
 uploadArchives {
 	repositories {

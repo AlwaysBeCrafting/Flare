@@ -1,6 +1,5 @@
 package stream.alwaysbecrafting.flare;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +76,7 @@ public class GameEngine {
 	 * @param deltaTime The time, in seconds, since the last update
 	 */
 	public void update( float deltaTime ) {
+		if ( isPaused ) return;
 		SYSTEMS.keySet().forEach( system -> {
 			system.update( this, deltaTime );
 		} );
@@ -111,17 +111,17 @@ public class GameEngine {
 	//--------------------------------------------------------------------------
 
 	/**
-	 * <p>Add one or more {@link Entity Entities} to the engine
-	 * @param entities Entities to add
+	 * <p>Add an entity to the engine
+	 * @param entity Entity to add
 	 */
-	public void add( Entity... entities ) {
-		Collections.addAll( ENTITIES, entities );
+	public void add( Entity entity ) {
+		ENTITIES.add( entity );
 	}
 
 	//--------------------------------------------------------------------------
 
 	/**
-	 * <p>Remove one or more {@link Entity Entities} from the engine
+	 * <p>Remove an entity from the engine
 	 * @param entity Entity to remove
 	 */
 	public void remove( Entity entity ) {

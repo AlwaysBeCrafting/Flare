@@ -38,9 +38,9 @@ public abstract class EntitySystem extends GameSystem {
 		onUpdateCalled = true;
 
 		engine.ENTITIES.stream()
-				.filter( entity -> entity.hasAllComponents( requireAllTypes ))
-				.filter( entity -> entity.hasAnyComponent( requireOneTypes ))
-				.filter( entity -> entity.hasNoComponent( forbidTypes ))
+				.filter( entity -> entity.hasAll( requireAllTypes ))
+				.filter( entity -> entity.hasAny( requireOneTypes ))
+				.filter( entity -> entity.hasNone( forbidTypes ))
 				.forEach( entity -> onHandleEntity( entity, deltaTime ));
 	}
 

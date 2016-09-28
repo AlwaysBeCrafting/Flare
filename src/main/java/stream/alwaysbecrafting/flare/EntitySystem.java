@@ -15,9 +15,9 @@ import java.util.Set;
  * {@link EntitySystem#requireAll(Class[])},
  * {@link EntitySystem#requireOne(Class[])}, or
  * {@link EntitySystem#forbid(Class[])} to describe which {@link Entity Entities} should be
- * given to its {@link EntitySystem#onHandleEntity(Entity, float)} method.
+ * given to its {@link EntitySystem#onHandleEntity(Entity, double)} method.
  *
- * <p>After the system is added, {@link EntitySystem#onHandleEntity(Entity, float)} will
+ * <p>After the system is added, {@link EntitySystem#onHandleEntity(Entity, double)} will
  * be called each game loop for every {@link Entity} that matches the given
  * constraints.
  */
@@ -34,7 +34,7 @@ public abstract class EntitySystem extends GameSystem {
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
-	@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+	@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 		onUpdateCalled = true;
 
 		engine.ENTITIES.stream()
@@ -102,16 +102,16 @@ public abstract class EntitySystem extends GameSystem {
 	 * filter parameters
 	 *
 	 * @param entity A matching {@code Entity}
-	 * @param deltaTime The time given to {@link GameEngine#update(float)} for
+	 * @param deltaTime The time given to {@link GameEngine#update(double)} for
 	 *                  this iteration of the game loop; ostensibly, the time
 	 *                  between the previous loop and the current one
 	 */
-	protected abstract void onHandleEntity( Entity entity, float deltaTime );
+	protected abstract void onHandleEntity( Entity entity, double deltaTime );
 
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
-	@Override void update( GameEngine engine, float deltaTime ) {
+	@Override void update( GameEngine engine, double deltaTime ) {
 		onUpdateCalled = false;
 		super.update( engine, deltaTime );
 

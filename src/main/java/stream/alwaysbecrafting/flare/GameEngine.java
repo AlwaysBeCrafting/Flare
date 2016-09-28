@@ -75,7 +75,7 @@ public class GameEngine {
 	 *
 	 * @param deltaTime The time, in seconds, since the last update
 	 */
-	public void update( float deltaTime ) {
+	public void update( double deltaTime ) {
 		if ( isPaused ) return;
 		SYSTEMS.keySet().forEach( system -> {
 			system.update( this, deltaTime );
@@ -133,7 +133,7 @@ public class GameEngine {
 	/**
 	 * <p>Temporarily stop <i>all</i> processing on this engine, until a
 	 * subsequent call to {@link GameEngine#resume()} is made. Calling
-	 * {@link GameEngine#update(float)} while paused does nothing.
+	 * {@link GameEngine#update(double)} while paused does nothing.
 	 *
 	 * <p>Also calls {@link GameSystem#onPause()} on all attached systems which
 	 * are not already paused

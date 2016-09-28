@@ -19,7 +19,7 @@ Extend `GameSystem` or `EntitySystem`:
 		}
 		
 		@Override
-		protected void onHandleEntity( Entity entity, float deltaTime ) {
+		protected void onHandleEntity( Entity entity, double deltaTime ) {
 			LocationComponent location = entity.get( LocationComponent.class );
 			SpriteComponent sprite = entity.get( SpriteComponent.class );
 			
@@ -35,5 +35,5 @@ Add it to a `GameEngine`:
 Update your `GameEngine` every frame:
 
 	double currentFrameTime = System.currentTimeMillis() / 1000.0;
-	myEngine.update( (float)( currentFrameTime - lastFrameTime ));
+	myEngine.update( currentFrameTime - lastFrameTime );
 	lastFrameTime = currentFrameTime;

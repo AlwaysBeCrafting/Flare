@@ -9,7 +9,7 @@ public class StateMachine {
 
 	private final Map<String,State> STATES = new HashMap<>();
 
-	private State currentState = State.EMPTY;
+	private State currentState = new State();
 
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
@@ -44,12 +44,6 @@ public class StateMachine {
 		currentState.onExit();
 		currentState = STATES.get( name );
 		currentState.onEnter();
-	}
-
-	//--------------------------------------------------------------------------
-
-	public void handleInput() {
-		currentState.onHandleInput();
 	}
 
 	//--------------------------------------------------------------------------

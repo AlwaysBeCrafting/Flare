@@ -7,7 +7,7 @@ import org.junit.Test;
 public class GameEngineTest {
 	//--------------------------------------------------------------------------
 
-	@Test public void AddedSystem_CallsStartBeforeResume() {
+	@Test public void Add_WithSingleSystem_CallsStartBeforeResume() {
 		GameEngine engine = new GameEngine();
 		StringBuilder output = new StringBuilder();
 		GameSystem system = new GameSystem() {
@@ -29,7 +29,7 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void RemovedSystem_CallsPauseBeforeStop() {
+	@Test public void Remove_WithSingleSystem_CallsPauseBeforeStop() {
 		GameEngine engine = new GameEngine();
 		StringBuilder output = new StringBuilder();
 		GameSystem system = new GameSystem() {
@@ -72,7 +72,7 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void RemovedSystem_ByClassReference_StopsExecution() {
+	@Test public void Remove_ByClassReference_StopsExecution() {
 		GameEngine engine = new GameEngine();
 		StringBuilder output = new StringBuilder( "" );
 		GameSystem system = new GameSystem() {
@@ -92,7 +92,7 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void MultipleAddedSystems_ExecuteInOrderAdded() {
+	@Test public void Add_WithMultipleSystems_ExecuteInOrderAdded() {
 		GameEngine engine = new GameEngine();
 		StringBuilder output = new StringBuilder( "" );
 
@@ -136,7 +136,7 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void OnPauseAndResume_AlreadyPausedSystems_DontChangeState() {
+	@Test public void OnPauseAndResume_WithAlreadyPausedSystems_DontDuplicatePauseOrResume() {
 		GameEngine engine = new GameEngine();
 		StringBuilder builder = new StringBuilder( "" );
 
@@ -176,7 +176,7 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void OnUpdate_PrioritizedSystems_RunInPriorityOrder() {
+	@Test public void Update_WithPrioritizedSystems_RunInPriorityOrder() {
 		GameEngine engine = new GameEngine();
 		StringBuilder builder = new StringBuilder( "" );
 

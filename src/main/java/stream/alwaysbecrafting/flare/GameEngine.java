@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.stream.Stream;
 
 //==============================================================================
 /**
@@ -160,6 +161,12 @@ public class GameEngine {
 			} );
 		}
 		isPaused = false;
+	}
+
+	//--------------------------------------------------------------------------
+
+	public Stream<Entity> entityStream() {
+		return ENTITIES.stream();
 	}
 
 	//--------------------------------------------------------------------------

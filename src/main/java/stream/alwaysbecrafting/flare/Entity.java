@@ -115,5 +115,15 @@ public class Entity {
 	}
 
 	//--------------------------------------------------------------------------
+
+	/**
+	 * @param componentType A single class to match against this entity's components
+	 * @return {@code true} if there is a component of the given type, else {@code false}
+	 */
+	public boolean has( Class<?> componentType ) {
+		return COMPONENTS.containsKey( componentType );
+	}
+
+	//--------------------------------------------------------------------------
 }
 //------------------------------------------------------------------------------

@@ -37,7 +37,7 @@ public abstract class EntitySystem extends GameSystem {
 	@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 		onUpdateCalled = true;
 
-		engine.ENTITIES.stream()
+		engine.entityStream()
 				.filter( this::acceptEntity )
 				.forEach( entity -> onHandleEntity( entity, deltaTime ));
 	}

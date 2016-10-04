@@ -91,6 +91,19 @@ public class Entity {
 	//--------------------------------------------------------------------------
 
 	/**
+	 * <p>Removes a component from this {@code Entity}
+	 *
+	 * @param component The class of the component to retrieve
+	 *
+	 * @return {@code true} if a component was removed, else {@code false}
+	 */
+	public boolean remove( Object component ) {
+		return COMPONENTS.remove( component.getClass(), component );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
 	 * @param componentTypes Classes to match against this entity's components
 	 *
 	 * @return {@code true} if there is a component of every listed type, else {@code false}

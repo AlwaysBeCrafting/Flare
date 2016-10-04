@@ -1,11 +1,11 @@
 package stream.alwaysbecrafting.flare;
 
-//==============================================================================
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+//==============================================================================
 /**
  * <p>Specialized {@link GameSystem} that handles a set of
  * {@link Entity Entities} matching some constraints
@@ -37,10 +37,8 @@ public abstract class EntitySystem extends GameSystem {
 	@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 		onUpdateCalled = true;
 
-		engine.ENTITIES.stream()
-				.filter( entity -> entity.hasAll( requireAllTypes ))
-				.filter( entity -> entity.hasAny( requireOneTypes ))
-				.filter( entity -> entity.hasNone( forbidTypes ))
+		engine.entityStream()
+				.filter( this::acceptEntity )
 				.forEach( entity -> onHandleEntity( entity, deltaTime ));
 	}
 
@@ -54,7 +52,7 @@ public abstract class EntitySystem extends GameSystem {
 	 *
 	 * @param componentTypes The components to include
 	 */
-	protected void requireAll( Class<?>... componentTypes ) {
+	@Deprecated protected void requireAll( Class<?>... componentTypes ) {
 		Collections.addAll( requireAllTypes, componentTypes );
 	}
 
@@ -70,9 +68,10 @@ public abstract class EntitySystem extends GameSystem {
 	 * <p>A good place to call this is in a constructor
 	 *
 	 * @param componentTypes The components to include
+	 *
 	 * @throws IllegalStateException If {@code requireOne()} has been called before, or if this system is already added to an engine
 	 */
-	protected void requireOne( Class<?>... componentTypes ) {
+	@Deprecated protected void requireOne( Class<?>... componentTypes ) {
 		Collections.addAll( requireOneTypes, componentTypes );
 	}
 
@@ -88,9 +87,10 @@ public abstract class EntitySystem extends GameSystem {
 	 * <p>A good place to call this is in a constructor
 	 *
 	 * @param componentTypes The components to exclude
+	 *
 	 * @throws IllegalStateException If {@code forbid()} has been called before, or if this system is already added to an engine
 	 */
-	protected void forbid( Class<?>... componentTypes ) {
+	@Deprecated protected void forbid( Class<?>... componentTypes ) {
 		Collections.addAll( forbidTypes, componentTypes );
 	}
 
@@ -98,10 +98,23 @@ public abstract class EntitySystem extends GameSystem {
 	//--------------------------------------------------------------------------
 
 	/**
+	 * <p>Override to select which entities will be passed to
+	 * {@link EntitySystem#onHandleEntity(Entity, double)}
+	 *
+	 * @param entity An entity to filter
+	 *
+	 * @return {@code true} if this entity should be passed to {@link EntitySystem#onHandleEntity(Entity, double)}, else {@code false}
+	 */
+	protected abstract boolean acceptEntity( Entity entity );
+
+	//--------------------------------------------------------------------------
+
+	/**
 	 * <p>Override to do something with the entities that match this system's
 	 * filter parameters
 	 *
 	 * @param entity A matching {@code Entity}
+	 *
 	 * @param deltaTime The time given to {@link GameEngine#update(double)} for
 	 *                  this iteration of the game loop; ostensibly, the time
 	 *                  between the previous loop and the current one

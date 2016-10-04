@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 public class GameEngine {
 	//--------------------------------------------------------------------------
 
-	final Set<Entity> ENTITIES = new HashSet<>();
+	private final Set<Entity> ENTITIES = new HashSet<>();
 
 
 	private final SortedMap<GameSystem,Class<? extends GameSystem>> SYSTEMS = new ConcurrentSkipListMap<>();

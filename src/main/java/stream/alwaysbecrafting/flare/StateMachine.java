@@ -2,6 +2,7 @@ package stream.alwaysbecrafting.flare;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 //==============================================================================
 public class StateMachine {
@@ -75,7 +76,24 @@ public class StateMachine {
 
 		currentState.onExit();
 		currentState = STATES.get( name );
-		currentState.onEnter();
+		currentState.onEnter( params );
+	}
+
+	//--------------------------------------------------------------------------
+
+	public boolean is( String name ) {
+		return getCurrentStateName().equals( name );
+	}
+
+	//--------------------------------------------------------------------------
+
+	public String getCurrentStateName() {
+		Optional<String> name = STATES.entrySet().stream()
+				.filter( entry -> entry.getValue().equals( currentState ))
+				.map( Map.Entry::getKey )
+				.findAny();
+
+		return name.orElseGet( () -> "" );
 	}
 
 	//--------------------------------------------------------------------------

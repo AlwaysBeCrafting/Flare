@@ -116,6 +116,7 @@ public class GameEngine {
 	 * @param entity Entity to add
 	 */
 	public void add( Entity entity ) {
+		entity.engine = this;
 		ENTITIES.add( entity );
 	}
 
@@ -126,6 +127,7 @@ public class GameEngine {
 	 * @param entity Entity to remove
 	 */
 	public void remove( Entity entity ) {
+		entity.engine = null;
 		ENTITIES.remove( entity );
 	}
 

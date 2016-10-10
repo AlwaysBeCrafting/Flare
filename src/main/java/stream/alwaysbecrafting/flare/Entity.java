@@ -20,7 +20,7 @@ public class Entity {
 
 	private final Map<Class<?>,Object> COMPONENTS = new HashMap<>();
 
-	private GameEngine engine;
+	GameEngine engine;
 
 	//--------------------------------------------------------------------------
 
@@ -28,12 +28,6 @@ public class Entity {
 		Arrays.asList( components ).forEach( component -> {
 			COMPONENTS.put( component.getClass(), component );
 		} );
-	}
-
-	//--------------------------------------------------------------------------
-
-	public void setEngine( GameEngine engine ) {
-		this.engine = engine;
 	}
 
 	//--------------------------------------------------------------------------

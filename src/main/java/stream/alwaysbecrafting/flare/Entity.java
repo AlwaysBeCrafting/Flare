@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 //==============================================================================
 /**
@@ -19,7 +20,7 @@ public class Entity {
 
 	private final Map<Class<?>,Object> COMPONENTS = new HashMap<>();
 
-	private GameEngine engine;
+	GameEngine engine;
 
 	//--------------------------------------------------------------------------
 
@@ -27,12 +28,6 @@ public class Entity {
 		Arrays.asList( components ).forEach( component -> {
 			COMPONENTS.put( component.getClass(), component );
 		} );
-	}
-
-	//--------------------------------------------------------------------------
-
-	public void setEngine( GameEngine engine ) {
-		this.engine = engine;
 	}
 
 	//--------------------------------------------------------------------------
@@ -50,9 +45,11 @@ public class Entity {
 	//--------------------------------------------------------------------------
 
 	/**
-	 * Add a component to this {@code Entity} if a component of the same type
+	 * <p>Add a component to this {@code Entity} if a component of the same type
 	 * does not already exist
+	 *
 	 * @param component The component to add
+	 *
 	 * @return {@code true} if the component was added, else {@code false}
 	 */
 	public boolean add( Object component ) {
@@ -62,8 +59,10 @@ public class Entity {
 	//--------------------------------------------------------------------------
 
 	/**
-	 * Retrieves a component from this {@code Entity}
+	 * <p>Retrieves a component from this {@code Entity}
+	 *
 	 * @param componentType The class of the component to retrieve
+	 *
 	 * @return If it exists, the component of the given class, else {@code null}
 	 */
 	public <T> T get( Class<T> componentType ) {
@@ -73,8 +72,10 @@ public class Entity {
 	//--------------------------------------------------------------------------
 
 	/**
-	 * Removes a component from this {@code Entity}
+	 * <p>Removes a component from this {@code Entity}
+	 *
 	 * @param componentType The class of the component to retrieve
+	 *
 	 * @return {@code true} if a component was removed, else {@code false}
 	 */
 	public boolean remove( Class<?> componentType ) {
@@ -84,7 +85,21 @@ public class Entity {
 	//--------------------------------------------------------------------------
 
 	/**
+	 * <p>Removes a component from this {@code Entity}
+	 *
+	 * @param component The class of the component to retrieve
+	 *
+	 * @return {@code true} if a component was removed, else {@code false}
+	 */
+	public boolean remove( Object component ) {
+		return COMPONENTS.remove( component.getClass(), component );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
 	 * @param componentTypes Classes to match against this entity's components
+	 *
 	 * @return {@code true} if there is a component of every listed type, else {@code false}
 	 */
 	public boolean hasAll( Collection<Class<?>> componentTypes ) {
@@ -95,23 +110,71 @@ public class Entity {
 
 	/**
 	 * @param componentTypes Classes to match against this entity's components
-	 * @return {@code true} if there is a component of at least one listed type, else {@code false}
+	 *
+	 * @return {@code true} if there is a component of every listed type, else {@code false}
 	 */
-	public boolean hasAny( Collection<Class<?>> componentTypes ) {
-		return componentTypes.isEmpty()
-				|| COMPONENTS.keySet().stream()
-						.anyMatch( componentTypes::contains );
+	public boolean hasAll( Class<?>... componentTypes ) {
+		return Stream.of( componentTypes ).allMatch( COMPONENTS::containsKey );
 	}
 
 	//--------------------------------------------------------------------------
 
 	/**
 	 * @param componentTypes Classes to match against this entity's components
+	 *
+	 * @return {@code true} if there is a component of at least one listed type, else {@code false}
+	 */
+	public boolean hasAny( Collection<Class<?>> componentTypes ) {
+		return componentTypes.isEmpty()
+				|| COMPONENTS.keySet().stream()
+				.anyMatch( componentTypes::contains );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @param componentTypes Classes to match against this entity's components
+	 *
+	 * @return {@code true} if there is a component of at least one listed type, else {@code false}
+	 */
+	public boolean hasAny( Class<?>... componentTypes ) {
+		return componentTypes.length == 0
+		|| Stream.of( componentTypes ).anyMatch( COMPONENTS::containsKey );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @param componentTypes Classes to match against this entity's components
+	 *
 	 * @return {@code true} if there are no components of the listed types, else {@code false}
 	 */
 	public boolean hasNone( Collection<Class<?>> componentTypes ) {
 		return COMPONENTS.keySet().stream()
 				.noneMatch( componentTypes::contains );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @param componentTypes Classes to match against this entity's components
+	 *
+	 * @return {@code true} if there are no components of the listed types, else {@code false}
+	 */
+	public boolean hasNone( Class<?>... componentTypes ) {
+		return Stream.of( componentTypes )
+				.noneMatch( COMPONENTS::containsKey );
+	}
+
+	//--------------------------------------------------------------------------
+
+	/**
+	 * @param componentType A single class to match against this entity's components
+	 *
+	 * @return {@code true} if there is a component of the given type, else {@code false}
+	 */
+	public boolean has( Class<?> componentType ) {
+		return COMPONENTS.containsKey( componentType );
 	}
 
 	//--------------------------------------------------------------------------

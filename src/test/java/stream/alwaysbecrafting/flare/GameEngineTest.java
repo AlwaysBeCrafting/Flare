@@ -7,7 +7,7 @@ import org.junit.Test;
 public class GameEngineTest {
 	//--------------------------------------------------------------------------
 
-	@Test public void AddedSystem_CallsStartBeforeResume() {
+	@Test public void Add_WithSingleSystem_CallsStartBeforeResume() {
 		GameEngine engine = new GameEngine();
 		StringBuilder output = new StringBuilder();
 		GameSystem system = new GameSystem() {
@@ -29,7 +29,7 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void RemovedSystem_CallsPauseBeforeStop() {
+	@Test public void Remove_WithSingleSystem_CallsPauseBeforeStop() {
 		GameEngine engine = new GameEngine();
 		StringBuilder output = new StringBuilder();
 		GameSystem system = new GameSystem() {
@@ -56,7 +56,7 @@ public class GameEngineTest {
 		GameEngine engine = new GameEngine();
 		StringBuilder output = new StringBuilder( "" );
 		GameSystem system = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				output.append( "executed" );
 			}
 		};
@@ -72,11 +72,11 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void RemovedSystem_ByClassReference_StopsExecution() {
+	@Test public void Remove_ByClassReference_StopsExecution() {
 		GameEngine engine = new GameEngine();
 		StringBuilder output = new StringBuilder( "" );
 		GameSystem system = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				output.append( "executed" );
 			}
 		};
@@ -92,32 +92,32 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void MultipleAddedSystems_ExecuteInOrderAdded() {
+	@Test public void Add_WithMultipleSystems_ExecuteInOrderAdded() {
 		GameEngine engine = new GameEngine();
 		StringBuilder output = new StringBuilder( "" );
 
 		GameSystem system1 = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				output.append( "1" );
 			}
 		};
 		GameSystem system2 = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				output.append( "2" );
 			}
 		};
 		GameSystem system3 = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				output.append( "3" );
 			}
 		};
 		GameSystem system4 = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				output.append( "4" );
 			}
 		};
 		GameSystem system5 = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				output.append( "5" );
 			}
 		};
@@ -136,7 +136,7 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void OnPauseAndResume_AlreadyPausedSystems_DontChangeState() {
+	@Test public void OnPauseAndResume_WithAlreadyPausedSystems_DontDuplicatePauseOrResume() {
 		GameEngine engine = new GameEngine();
 		StringBuilder builder = new StringBuilder( "" );
 
@@ -176,22 +176,22 @@ public class GameEngineTest {
 
 	//--------------------------------------------------------------------------
 
-	@Test public void OnUpdate_PrioritizedSystems_RunInPriorityOrder() {
+	@Test public void Update_WithPrioritizedSystems_RunInPriorityOrder() {
 		GameEngine engine = new GameEngine();
 		StringBuilder builder = new StringBuilder( "" );
 
 		GameSystem system1 = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				builder.append( "[1]" );
 			}
 		};
 		GameSystem system2 = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				builder.append( "[2]" );
 			}
 		};
 		GameSystem system3 = new GameSystem() {
-			@Override public void onUpdate( GameEngine engine, float deltaTime ) {
+			@Override public void onUpdate( GameEngine engine, double deltaTime ) {
 				builder.append( "[3]" );
 			}
 		};

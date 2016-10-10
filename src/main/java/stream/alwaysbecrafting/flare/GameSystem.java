@@ -66,16 +66,16 @@ public abstract class GameSystem implements Comparable<GameSystem> {
 	/**
 	 * <p>Called when this system should execute its main game loop behavior.
 	 * This is where the system will do most of its work, and is called once for
-	 * each time {@link GameEngine#update(float)} is called on the attached
+	 * each time {@link GameEngine#update(double)} is called on the attached
 	 * {@link GameEngine}.
 	 *
 	 * @param engine The engine this update is occurring in
 	 *
-	 * @param deltaTime The time given to {@link GameEngine#update(float)} for
+	 * @param deltaTime The time given to {@link GameEngine#update(double)} for
 	 *                  this iteration of the game loop; ostensibly, the time
 	 *                  between the previous loop and the current one
 	 */
-	public void onUpdate( GameEngine engine, float deltaTime ) {}
+	public void onUpdate( GameEngine engine, double deltaTime ) {}
 
 	//--------------------------------------------------------------------------
 
@@ -100,7 +100,7 @@ public abstract class GameSystem implements Comparable<GameSystem> {
 	//--------------------------------------------------------------------------
 	//--------------------------------------------------------------------------
 
-	void update( GameEngine engine, float deltaTime ) {
+	void update( GameEngine engine, double deltaTime ) {
 		onUpdate( engine, deltaTime );
 	}
 

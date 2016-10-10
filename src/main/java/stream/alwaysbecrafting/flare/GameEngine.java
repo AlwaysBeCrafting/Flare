@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.stream.Stream;
 
 //==============================================================================
 /**
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class GameEngine {
 	//--------------------------------------------------------------------------
 
-	final Set<Entity> ENTITIES = new HashSet<>();
+	private final Set<Entity> ENTITIES = new HashSet<>();
 
 
 	private final SortedMap<GameSystem,Class<? extends GameSystem>> SYSTEMS = new ConcurrentSkipListMap<>();
@@ -75,7 +76,7 @@ public class GameEngine {
 	 *
 	 * @param deltaTime The time, in seconds, since the last update
 	 */
-	public void update( float deltaTime ) {
+	public void update( double deltaTime ) {
 		if ( isPaused ) return;
 		SYSTEMS.keySet().forEach( system -> {
 			system.update( this, deltaTime );
@@ -115,6 +116,7 @@ public class GameEngine {
 	 * @param entity Entity to add
 	 */
 	public void add( Entity entity ) {
+		entity.engine = this;
 		ENTITIES.add( entity );
 	}
 
@@ -125,6 +127,7 @@ public class GameEngine {
 	 * @param entity Entity to remove
 	 */
 	public void remove( Entity entity ) {
+		entity.engine = null;
 		ENTITIES.remove( entity );
 	}
 
@@ -133,7 +136,7 @@ public class GameEngine {
 	/**
 	 * <p>Temporarily stop <i>all</i> processing on this engine, until a
 	 * subsequent call to {@link GameEngine#resume()} is made. Calling
-	 * {@link GameEngine#update(float)} while paused does nothing.
+	 * {@link GameEngine#update(double)} while paused does nothing.
 	 *
 	 * <p>Also calls {@link GameSystem#onPause()} on all attached systems which
 	 * are not already paused
@@ -160,6 +163,12 @@ public class GameEngine {
 			} );
 		}
 		isPaused = false;
+	}
+
+	//--------------------------------------------------------------------------
+
+	public Stream<Entity> entityStream() {
+		return ENTITIES.stream();
 	}
 
 	//--------------------------------------------------------------------------
